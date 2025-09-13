@@ -222,9 +222,9 @@ export default function Feed() {
       {/* Black header */}
       <div className="w-full h-[73px] bg-black rounded-b-[50px]"></div>
       
-      <div className="flex w-full max-w-[1440px] mx-auto relative">
+      <div className="flex w-full max-w-[1440px] mx-auto relative items-start gap-8 px-8">
         {/* Left Sidebar */}
-        <div className="w-[93px] h-[853px] bg-[#708659] rounded-[50px] mt-8 ml-8 flex-shrink-0 relative">
+        <div className="w-[93px] h-[853px] bg-[#708659] rounded-[50px] mt-8 flex-shrink-0 relative">
           {/* Menu Icon */}
           <svg
             className="absolute cursor-pointer hover:scale-110 transition-all duration-200"
@@ -371,7 +371,7 @@ export default function Feed() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-[281px] flex-shrink-0 mt-8 mr-8">
+        <div className="w-[281px] flex-shrink-0 mt-8">
           <div className="w-full h-[853px] bg-[#708659] rounded-[50px] relative">
             {/* What's Trending Section */}
             <div className="absolute left-6 top-8 text-black font-['Just_Another_Hand'] text-xl">
