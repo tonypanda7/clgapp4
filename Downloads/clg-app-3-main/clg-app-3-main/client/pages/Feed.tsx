@@ -168,8 +168,9 @@ export default function Feed() {
       });
 
       if (response.ok) {
-        const newPost = await response.json();
-        setPosts(prev => [newPost, ...prev]);
+        const data = await response.json();
+        const created = data?.post ?? data;
+        setPosts(prev => [created, ...prev]);
         setNewPostContent("");
       } else {
         // If API doesn't exist, add mock post
@@ -191,8 +192,9 @@ export default function Feed() {
     }
   };
 
-  const getUserInitial = (name: string) => {
-    return name.charAt(0).toUpperCase();
+  const getUserInitial = (name: any) => {
+    if (typeof name === 'string' && name.length > 0) return name.charAt(0).toUpperCase();
+    return 'U';
   };
 
   const formatTimestamp = (timestamp: string) => {
