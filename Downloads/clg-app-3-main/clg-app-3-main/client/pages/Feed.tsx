@@ -222,9 +222,9 @@ export default function Feed() {
       {/* Black header */}
       <div className="w-full h-[73px] bg-black rounded-b-[50px]"></div>
       
-      <div className="flex w-full max-w-[1440px] mx-auto relative items-start gap-8 px-8">
+      <div className="flex w-full max-w-[1440px] mx-auto relative items-stretch gap-8 px-8 py-8 h-[calc(100vh-73px)] overflow-hidden">
         {/* Left Sidebar */}
-        <div className="w-[93px] h-[853px] bg-[#708659] rounded-[50px] mt-8 flex-shrink-0 relative">
+        <div className="w-[93px] h-full bg-[#708659] rounded-[50px] flex-shrink-0 relative">
           {/* Menu Icon */}
           <svg
             className="absolute cursor-pointer hover:scale-110 transition-all duration-200"
@@ -278,7 +278,7 @@ export default function Feed() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 px-8">
+        <div className="flex-1 px-8 h-full overflow-y-auto">
           {/* Add Post Section */}
           <div className="w-full max-w-[812px] h-[95px] bg-[#5382B5] rounded-[30px] mt-8 relative">
             <div className="absolute left-4 top-8 text-black font-['Just_Another_Hand'] text-xl">
@@ -371,8 +371,8 @@ export default function Feed() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-[281px] flex-shrink-0 mt-8">
-          <div className="w-full h-[853px] bg-[#708659] rounded-[50px] relative">
+        <div className="w-[281px] flex-shrink-0 h-full">
+          <div className="w-full h-full bg-[#708659] rounded-[50px] relative overflow-y-auto">
             {/* What's Trending Section */}
             <div className="absolute left-6 top-8 text-black font-['Just_Another_Hand'] text-xl">
               WHAT'S TRENDING ?
