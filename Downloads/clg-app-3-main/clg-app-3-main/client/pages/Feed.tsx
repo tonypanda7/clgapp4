@@ -372,22 +372,22 @@ export default function Feed() {
 
         {/* Right Sidebar */}
         <div className="w-[281px] flex-shrink-0 h-full">
-          <div className="w-full h-full bg-[#708659] rounded-[50px] relative overflow-hidden">
+          <div className="w-full h-full bg-[#708659] rounded-[50px] p-4 flex flex-col overflow-hidden">
             {/* What's Trending Section */}
-            <div className="absolute left-6 top-8 text-black font-['Just_Another_Hand'] text-xl">
+            <div className="text-black font-['Just_Another_Hand'] text-xl mb-2">
               WHAT'S TRENDING ?
             </div>
-            <div className="absolute left-2 top-16 w-[246px] h-[352px] bg-white border border-[#FAE9E9] rounded-[50px]">
+            <div className="bg-white border border-[#FAE9E9] rounded-[50px] flex-[0.52] min-h-[180px]">
               <div className="p-6 space-y-4">
                 <div className="text-sm text-gray-600">No trending topics yet</div>
               </div>
             </div>
 
             {/* Your Posts Section */}
-            <div className="absolute left-2 top-[400px] text-black font-['Just_Another_Hand'] text-xl">
+            <div className="text-black font-['Just_Another_Hand'] text-xl mt-4 mb-2">
               YOUR POSTS
             </div>
-            <div className="absolute left-2 top-[430px] w-[246px] h-[371px] bg-[#FFFCFC] rounded-[50px]">
+            <div className="bg-[#FFFCFC] rounded-[50px] flex-[0.48] min-h-[150px]">
               <div className="p-6 space-y-4">
                 <div className="text-sm text-gray-600">Your recent posts will appear here</div>
               </div>
