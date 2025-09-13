@@ -150,12 +150,14 @@ export default function Dashboard() {
         break;
       case 'Happening':
         console.log('Showing campus events...');
+        navigate('/feed');
         break;
       case 'Image Posts':
         console.log('Opening image gallery...');
         break;
       case 'Feed':
         console.log('Opening user feed...');
+        navigate('/feed');
         break;
       default:
         console.log(`Clicked on ${cardName}`);
