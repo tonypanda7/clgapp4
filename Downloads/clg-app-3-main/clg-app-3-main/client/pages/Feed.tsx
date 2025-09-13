@@ -372,7 +372,7 @@ export default function Feed() {
 
         {/* Right Sidebar */}
         <div className="w-[281px] flex-shrink-0 h-full">
-          <div className="w-full h-full bg-[#708659] rounded-[50px] relative overflow-y-auto">
+          <div className="w-full h-full bg-[#708659] rounded-[50px] relative overflow-hidden">
             {/* What's Trending Section */}
             <div className="absolute left-6 top-8 text-black font-['Just_Another_Hand'] text-xl">
               WHAT'S TRENDING ?
