@@ -328,8 +328,8 @@ export default function Feed() {
                 </div>
 
                 {/* Post Content */}
-                <div className="bg-[#FFF8F8] rounded-[30px] p-6 mb-4">
-                  <p className="text-black text-sm leading-relaxed">{post.content}</p>
+                <div className="bg-[#FFF8F8] rounded-[30px] p-6 mb-4 w-full">
+                  <p className="text-black text-sm leading-relaxed break-words whitespace-pre-wrap">{post.content}</p>
                 </div>
 
                 {/* Post Actions */}
