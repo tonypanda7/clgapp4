@@ -165,7 +165,7 @@ export default function Feed() {
       if (file) {
         const bucket = 'posts';
         const path = `${userData?.id || 'anon'}/${Date.now()}_${file.name}`;
-        const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type });
+        const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true });
         if (upErr) throw upErr;
         const { data } = supabase.storage.from(bucket).getPublicUrl(path);
         mediaUrl = data.publicUrl;
