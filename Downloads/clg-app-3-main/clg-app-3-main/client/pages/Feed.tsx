@@ -163,35 +163,50 @@ export default function Feed() {
       let mediaType: string | undefined;
 
       if (file) {
-        const sb = getSupabase();
-        if (!sb) {
-          console.warn('Supabase missing, skipping upload');
-          // Fall back to local preview post
-          mediaUrl = undefined;
+        // Try server-side upload first
+        const MAX_BYTES = 50 * 1024 * 1024;
+        if (file.size > MAX_BYTES) {
+          alert('File too large. Max 50MB.');
+          return;
+        }
+        const arr = await file.arrayBuffer();
+        const bytes = new Uint8Array(arr);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        const base64 = btoa(binary);
+
+        const token = localStorage.getItem('authToken');
+        const srv = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ filename: file.name, contentType: file.type || 'application/octet-stream', data: base64 })
+        });
+
+        if (srv.ok) {
+          const up = await srv.json();
+          mediaUrl = up.url;
           mediaType = file.type;
         } else {
-          // Basic validation and safe filename
-          const MAX_BYTES = 50 * 1024 * 1024; // 50MB
-          if (file.size > MAX_BYTES) {
-            alert('File too large. Max 50MB.');
-            return;
+          // Fallback to client-side Supabase upload
+          const sb = getSupabase();
+          if (!sb) {
+            console.warn('Supabase missing, skipping upload');
+            mediaUrl = undefined;
+            mediaType = file.type;
+          } else {
+            const bucket = 'posts';
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+            const path = `${userData?.id || 'anon'}/${Date.now()}_${safeName}`;
+            const { error: upErr } = await sb.storage.from(bucket).upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true, cacheControl: '3600' });
+            if (upErr) {
+              console.error('Supabase upload error:', upErr);
+              alert(`Upload failed: ${upErr.message || 'check bucket & policies'}`);
+              return;
+            }
+            const { data } = sb.storage.from(bucket).getPublicUrl(path);
+            mediaUrl = data.publicUrl;
+            mediaType = file.type;
           }
-          const bucket = 'posts';
-          const safeName = file.name
-            .replace(/[^a-zA-Z0-9._-]/g, '_')
-            .replace(/_+/g, '_');
-          const path = `${userData?.id || 'anon'}/${Date.now()}_${safeName}`;
-          const { error: upErr } = await sb.storage
-            .from(bucket)
-            .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true, cacheControl: '3600' });
-          if (upErr) {
-            console.error('Supabase upload error:', upErr);
-            alert(`Upload failed: ${upErr.message || 'check bucket & policies'}`);
-            return;
-          }
-          const { data } = sb.storage.from(bucket).getPublicUrl(path);
-          mediaUrl = data.publicUrl;
-          mediaType = file.type;
         }
       }
 

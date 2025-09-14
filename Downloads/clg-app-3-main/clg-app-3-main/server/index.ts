@@ -12,6 +12,7 @@ import {
   handleGetCollegeData
 } from "./routes/auth";
 import { handleStatus } from "./routes/status";
+import { handleUpload } from "./routes/upload";
 import {
   handleVerifyCollegeEmail,
   handleSendVerificationEmail,
@@ -38,6 +39,7 @@ export function createServer() {
 
   // Add error handling for JSON parsing
   app.use(express.json({
+    limit: '10mb',
     verify: (req, res, buf) => {
       console.log("Raw request body:", buf.toString());
     }
@@ -73,6 +75,7 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
   app.get("/api/status", handleStatus);
+  app.post("/api/upload", handleUpload);
 
   // Authentication routes
   app.post("/api/auth/login", handleLogin);
