@@ -163,10 +163,25 @@ export default function Feed() {
       let mediaType: string | undefined;
 
       if (file) {
+        // Basic validation and safe filename
+        const MAX_BYTES = 50 * 1024 * 1024; // 50MB
+        if (file.size > MAX_BYTES) {
+          alert('File too large. Max 50MB.');
+          return;
+        }
         const bucket = 'posts';
-        const path = `${userData?.id || 'anon'}/${Date.now()}_${file.name}`;
-        const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true });
-        if (upErr) throw upErr;
+        const safeName = file.name
+          .replace(/[^a-zA-Z0-9._-]/g, '_')
+          .replace(/_+/g, '_');
+        const path = `${userData?.id || 'anon'}/${Date.now()}_${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from(bucket)
+          .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true, cacheControl: '3600' });
+        if (upErr) {
+          console.error('Supabase upload error:', upErr);
+          alert(`Upload failed: ${upErr.message || 'check bucket & policies'}`);
+          return;
+        }
         const { data } = supabase.storage.from(bucket).getPublicUrl(path);
         mediaUrl = data.publicUrl;
         mediaType = file.type;
