@@ -108,10 +108,10 @@ export const handleGetPosts = async (req: AuthenticatedRequest, res: Response) =
 export const handleCreatePost = async (req: AuthenticatedRequest, res: Response) => {
   try {
     authenticateToken(req, res, async () => {
-      const { content } = req.body;
+      const { content, mediaUrl } = req.body;
       const user = req.user;
 
-      if (!content || content.trim().length === 0) {
+      if ((!content || content.trim().length === 0) && !mediaUrl) {
         return res.status(400).json({
           success: false,
           message: "Post content is required"
