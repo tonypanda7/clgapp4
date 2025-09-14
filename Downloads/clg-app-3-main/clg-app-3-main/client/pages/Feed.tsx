@@ -163,28 +163,36 @@ export default function Feed() {
       let mediaType: string | undefined;
 
       if (file) {
-        // Basic validation and safe filename
-        const MAX_BYTES = 50 * 1024 * 1024; // 50MB
-        if (file.size > MAX_BYTES) {
-          alert('File too large. Max 50MB.');
-          return;
+        const sb = getSupabase();
+        if (!sb) {
+          console.warn('Supabase missing, skipping upload');
+          // Fall back to local preview post
+          mediaUrl = undefined;
+          mediaType = file.type;
+        } else {
+          // Basic validation and safe filename
+          const MAX_BYTES = 50 * 1024 * 1024; // 50MB
+          if (file.size > MAX_BYTES) {
+            alert('File too large. Max 50MB.');
+            return;
+          }
+          const bucket = 'posts';
+          const safeName = file.name
+            .replace(/[^a-zA-Z0-9._-]/g, '_')
+            .replace(/_+/g, '_');
+          const path = `${userData?.id || 'anon'}/${Date.now()}_${safeName}`;
+          const { error: upErr } = await sb.storage
+            .from(bucket)
+            .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true, cacheControl: '3600' });
+          if (upErr) {
+            console.error('Supabase upload error:', upErr);
+            alert(`Upload failed: ${upErr.message || 'check bucket & policies'}`);
+            return;
+          }
+          const { data } = sb.storage.from(bucket).getPublicUrl(path);
+          mediaUrl = data.publicUrl;
+          mediaType = file.type;
         }
-        const bucket = 'posts';
-        const safeName = file.name
-          .replace(/[^a-zA-Z0-9._-]/g, '_')
-          .replace(/_+/g, '_');
-        const path = `${userData?.id || 'anon'}/${Date.now()}_${safeName}`;
-        const { error: upErr } = await supabase.storage
-          .from(bucket)
-          .upload(path, file, { contentType: file.type || 'application/octet-stream', upsert: true, cacheControl: '3600' });
-        if (upErr) {
-          console.error('Supabase upload error:', upErr);
-          alert(`Upload failed: ${upErr.message || 'check bucket & policies'}`);
-          return;
-        }
-        const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-        mediaUrl = data.publicUrl;
-        mediaType = file.type;
       }
 
       const token = localStorage.getItem("authToken");
