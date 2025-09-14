@@ -78,7 +78,9 @@ export const handleGetPosts = async (req: AuthenticatedRequest, res: Response) =
             content: post.content,
             timestamp: post.timestamp,
             likes: post.likes || 0,
-            comments: post.comments || 0
+            comments: post.comments || 0,
+            mediaUrl: post.mediaUrl,
+            mediaType: post.mediaType
           })),
           hasMore,
           currentPage: page,
@@ -194,7 +196,9 @@ export const handleGetUserPosts = async (req: AuthenticatedRequest, res: Respons
             content: post.content,
             timestamp: post.timestamp,
             likes: post.likes || 0,
-            comments: post.comments || 0
+            comments: post.comments || 0,
+            mediaUrl: post.mediaUrl,
+            mediaType: post.mediaType
           })),
           hasMore,
           currentPage: page,
