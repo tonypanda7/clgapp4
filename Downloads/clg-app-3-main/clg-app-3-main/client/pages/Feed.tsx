@@ -372,9 +372,9 @@ export default function Feed() {
                 {post.mediaUrl && (
                   <div className="bg-[#FFF8F8] rounded-[30px] p-2 mb-4 w-full">
                     {post.mediaType?.startsWith('video') ? (
-                      <video src={post.mediaUrl} controls className="w-full h-auto max-h-[65vh] rounded-[20px] object-contain" />
+                      <video src={post.mediaUrl} controls className="w-full h-auto max-h-[40vh] rounded-[20px] object-contain" />
                     ) : (
-                      <img src={post.mediaUrl} alt="media" className="w-full h-auto max-h-[65vh] rounded-[20px] object-contain" />
+                      <img src={post.mediaUrl} alt="media" className="w-full h-auto max-h-[40vh] rounded-[20px] object-contain" />
                     )}
                   </div>
                 )}
