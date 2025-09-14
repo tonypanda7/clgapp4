@@ -136,7 +136,9 @@ export const handleCreatePost = async (req: AuthenticatedRequest, res: Response)
           content: content.trim(),
           timestamp: new Date().toISOString(),
           likes: 0,
-          comments: 0
+          comments: 0,
+          mediaUrl: req.body.mediaUrl || null,
+          mediaType: req.body.mediaType || null
         };
 
         const postId = await storage.createPost(postData);
