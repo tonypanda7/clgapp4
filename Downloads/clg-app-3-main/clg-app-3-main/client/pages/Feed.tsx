@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/utils/supabase";
 
 interface Post {
   id: string;
@@ -10,6 +11,8 @@ interface Post {
   timestamp: string;
   likes?: number;
   comments?: number;
+  mediaUrl?: string;
+  mediaType?: string;
 }
 
 export default function Feed() {
@@ -20,6 +23,7 @@ export default function Feed() {
   const [newPostContent, setNewPostContent] = useState("");
   const [userData, setUserData] = useState<any>(null);
   const [profile, setProfile] = useState<{ fullName: string; profilePicture?: string } | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const observer = useRef<IntersectionObserver>();
 
@@ -152,9 +156,22 @@ export default function Feed() {
   }, [loading, hasMore, page]);
 
   const handleAddPost = async () => {
-    if (!newPostContent.trim()) return;
+    if (!newPostContent.trim() && !file) return;
 
     try {
+      let mediaUrl: string | undefined;
+      let mediaType: string | undefined;
+
+      if (file) {
+        const bucket = 'posts';
+        const path = `${userData?.id || 'anon'}/${Date.now()}_${file.name}`;
+        const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type });
+        if (upErr) throw upErr;
+        const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+        mediaUrl = data.publicUrl;
+        mediaType = file.type;
+      }
+
       const token = localStorage.getItem("authToken");
       const response = await fetch("/api/posts", {
         method: "POST",
@@ -163,7 +180,9 @@ export default function Feed() {
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          content: newPostContent
+          content: newPostContent,
+          mediaUrl,
+          mediaType
         })
       });
 
@@ -172,8 +191,8 @@ export default function Feed() {
         const created = data?.post ?? data;
         setPosts(prev => [created, ...prev]);
         setNewPostContent("");
+        setFile(null);
       } else {
-        // If API doesn't exist, add mock post
         const mockPost: Post = {
           id: `new-${Date.now()}`,
           userId: userData?.id || "current-user",
@@ -186,6 +205,7 @@ export default function Feed() {
         };
         setPosts(prev => [mockPost, ...prev]);
         setNewPostContent("");
+        setFile(null);
       }
     } catch (error) {
       console.error("Error adding post:", error);
@@ -293,6 +313,12 @@ export default function Feed() {
                 className="flex-1 bg-transparent border-none outline-none text-sm text-black placeholder-black/60"
                 onKeyPress={(e) => e.key === 'Enter' && handleAddPost()}
               />
+              <input
+                type="file"
+                accept="image/*,video/*"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="text-xs"
+              />
               <button
                 onClick={handleAddPost}
                 className="ml-2 px-4 py-1 bg-[#5382B5] text-white rounded-lg text-sm hover:bg-[#4a7aa8] transition-colors"
@@ -327,10 +353,22 @@ export default function Feed() {
                   </div>
                 </div>
 
+                {/* Post Media */}
+                {post.mediaUrl && (
+                  <div className="bg-[#FFF8F8] rounded-[30px] p-2 mb-4 w-full">
+                    {post.mediaType?.startsWith('video') ? (
+                      <video src={post.mediaUrl} controls className="w-full rounded-[20px]" />
+                    ) : (
+                      <img src={post.mediaUrl} alt="media" className="w-full rounded-[20px]" />
+                    )}
+                  </div>
+                )}
                 {/* Post Content */}
-                <div className="bg-[#FFF8F8] rounded-[30px] p-6 mb-4 w-full">
-                  <p className="text-black text-sm leading-relaxed break-words whitespace-pre-wrap">{post.content}</p>
-                </div>
+                {post.content && (
+                  <div className="bg-[#FFF8F8] rounded-[30px] p-6 mb-4 w-full">
+                    <p className="text-black text-sm leading-relaxed break-words whitespace-pre-wrap">{post.content}</p>
+                  </div>
+                )}
 
                 {/* Post Actions */}
                 <div className="flex items-center space-x-6 text-white/80 text-sm">
