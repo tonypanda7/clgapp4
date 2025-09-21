@@ -25,6 +25,7 @@ export default function Feed() {
   const [profile, setProfile] = useState<{ fullName: string; profilePicture?: string } | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const navigate = useNavigate();
   const observer = useRef<IntersectionObserver>();
 
@@ -151,7 +152,9 @@ export default function Feed() {
         content: content,
         timestamp: new Date(Date.now() - Math.random() * 86400000 * 7).toISOString(),
         likes: Math.floor(Math.random() * 50),
-        comments: Math.floor(Math.random() * 20)
+        comments: Math.floor(Math.random() * 20),
+        mediaUrl: i % 3 === 0 ? "https://api.builder.io/api/v1/image/assets/TEMP/57afca49c5ced205cfec6834e2ae0d661773c339?width=664" : undefined,
+        mediaType: i % 3 === 0 ? "image/jpeg" : undefined
       };
     });
   };
@@ -244,6 +247,7 @@ export default function Feed() {
         setPosts(prev => [created, ...prev]);
         setNewPostContent("");
         setFile(null);
+        setShowCreatePostModal(false);
       } else {
         const mockPost: Post = {
           id: `new-${Date.now()}`,
@@ -260,6 +264,7 @@ export default function Feed() {
         setPosts(prev => [mockPost, ...prev]);
         setNewPostContent("");
         setFile(null);
+        setShowCreatePostModal(false);
       }
     } catch (error) {
       console.error("Error adding post:", error);
@@ -336,51 +341,11 @@ export default function Feed() {
         <h1 className="text-white text-2xl font-normal font-['Roboto_Condensed']">INNOVIST</h1>
       </div>
 
-      {/* Community Feed Title Banner */}
-      <div className="w-full relative mt-4">
-        {/* Striped background */}
-        <div className="w-full h-[150px] relative">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="w-full h-5 bg-[#ABD9D9] mb-1" />
-          ))}
-        </div>
-        {/* Blue overlay with title */}
-        <div className="absolute inset-0 bg-[#C5E4FF] rounded-[20px] mx-2 mt-2 flex items-center justify-center">
-          <h1 className="text-white text-6xl md:text-7xl lg:text-8xl font-normal font-['Bowlby_One'] uppercase tracking-wide">
-            COMMUNITY FEED
-          </h1>
-        </div>
-      </div>
-
       <div className="flex w-full max-w-[1440px] mx-auto gap-4 p-4 lg:p-8">
         {/* Left Sidebar - Recent Posts */}
         <div className="w-full lg:w-[338px] flex-shrink-0">
-          {/* Blue container for new post */}
-          <div className="w-full h-[333px] bg-[#C5E4FF] rounded-[20px] p-6 mb-6">
-            <h2 className="text-black text-2xl font-normal font-['Bebas_Neue'] uppercase mb-4">
-              Create New Post
-            </h2>
-            <div className="space-y-4">
-              <textarea
-                placeholder="What's on your mind?"
-                value={newPostContent}
-                onChange={(e) => setNewPostContent(e.target.value)}
-                className="w-full h-24 p-3 rounded-lg border-none outline-none resize-none text-sm"
-              />
-              <input
-                type="file"
-                accept="image/*,video/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="w-full text-xs"
-              />
-              <button
-                onClick={handleAddPost}
-                className="w-full py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Post
-              </button>
-            </div>
-          </div>
+          {/* Blue container - no create post section */}
+          <div className="w-full h-[333px] bg-[#C5E4FF] rounded-[20px] p-6 mb-6"></div>
 
           {/* Recent Posts Section */}
           <h2 className="text-black text-4xl font-normal font-['Bebas_Neue'] uppercase mb-6">
@@ -392,7 +357,7 @@ export default function Feed() {
             {posts.slice(0, 4).map((post) => (
               <div key={post.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
                 <img
-                  src={post.mediaUrl || "https://api.builder.io/api/v1/image/assets/TEMP/c0f6a16e9ecc31004767acffb8494dfe02ef77ed?width=230"}
+                  src={post.mediaUrl || "https://api.builder.io/api/v1/image/assets/TEMP/304633bde7678aa1ec116b47ffd61f418e1857f4?width=230"}
                   alt="Post"
                   className="w-[115px] h-[115px] object-cover rounded-lg"
                 />
@@ -474,7 +439,7 @@ export default function Feed() {
               >
                 {/* User info */}
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
                     <span className="text-black text-lg font-normal font-['Roboto_Condensed']">
                       {getUserInitial(post.userName)}
                     </span>
@@ -491,18 +456,18 @@ export default function Feed() {
 
                 {/* Post media */}
                 {post.mediaUrl && (
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     {post.mediaType?.startsWith('video') ? (
                       <video 
                         src={post.mediaUrl} 
                         controls 
-                        className="w-full max-w-[250px] h-auto rounded-lg"
+                        className="max-w-[400px] h-auto rounded-lg"
                       />
                     ) : (
                       <img 
                         src={post.mediaUrl} 
                         alt="Post media" 
-                        className="w-full max-w-[250px] h-auto rounded-lg object-cover"
+                        className="max-w-[400px] h-auto rounded-lg object-cover"
                       />
                     )}
                   </div>
@@ -515,7 +480,7 @@ export default function Feed() {
 
                 {/* Lorem ipsum text */}
                 <p className="text-black text-xs font-normal font-['Roboto_Flex'] text-justify leading-normal mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
 
                 {/* Interaction buttons */}
@@ -550,7 +515,7 @@ export default function Feed() {
             {loading && (
               <div className="w-full bg-[#E9F4FF] bg-opacity-87 rounded-[10px] p-6 animate-pulse">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
                   <div className="h-4 bg-gray-300 rounded w-1/3"></div>
                 </div>
                 <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
@@ -563,7 +528,7 @@ export default function Feed() {
         {/* Right Sidebar - Navigation */}
         <div className="w-[93px] flex-shrink-0">
           <div className="w-full h-full bg-[#9AC3C3] rounded-[50px] flex flex-col items-center py-8 space-y-12">
-            {/* Menu Icon */}
+            {/* Menu Icon - Dashboard Link */}
             <Link to="/dashboard" className="cursor-pointer hover:scale-110 transition-all duration-200">
               <svg width="37" height="39" viewBox="0 0 37 39" fill="none">
                 <path 
@@ -601,6 +566,22 @@ export default function Feed() {
                 />
               </svg>
             </div>
+
+            {/* Create Post Button */}
+            <button 
+              onClick={() => setShowCreatePostModal(true)}
+              className="cursor-pointer hover:scale-110 transition-all duration-200 bg-white rounded-full p-3"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path 
+                  d="M12 5V19M5 12H19" 
+                  stroke="#9AC3C3" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
             
             {/* User Profile */}
             <Link 
@@ -624,6 +605,62 @@ export default function Feed() {
           </div>
         </div>
       </div>
+
+      {/* Create Post Modal */}
+      {showCreatePostModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-[20px] p-8 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-black text-2xl font-normal font-['Bebas_Neue'] uppercase">
+                Create New Post
+              </h2>
+              <button
+                onClick={() => setShowCreatePostModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <textarea
+                placeholder="What's on your mind?"
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+                className="w-full h-32 p-4 rounded-lg border border-gray-200 outline-none resize-none text-sm"
+              />
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Add Image/Video
+                </label>
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm border border-gray-200 rounded-lg p-2"
+                />
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => setShowCreatePostModal(false)}
+                  className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddPost}
+                  disabled={!newPostContent.trim() && !file}
+                  className="flex-1 py-2 bg-[#9AC3C3] text-white rounded-lg hover:bg-[#8ab3b3] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Post
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
