@@ -341,9 +341,9 @@ export default function Feed() {
         <h1 className="text-white text-2xl font-normal font-['Roboto_Condensed']">INNOVIST</h1>
       </div>
 
-      <div className="flex w-full max-w-[1440px] mx-auto gap-4 p-4 lg:p-8">
+      <div className="flex w-full max-w-[1440px] mx-auto gap-4 p-4 lg:p-8 h-[calc(100vh-73px)] overflow-hidden">
         {/* Left Sidebar - Recent Posts */}
-        <div className="w-full lg:w-[338px] flex-shrink-0">
+        <div className="w-full lg:w-[338px] flex-shrink-0 h-full overflow-y-auto">
           {/* Blue container - no create post section */}
           <div className="w-full h-[333px] bg-[#C5E4FF] rounded-[20px] p-6 mb-6"></div>
 
@@ -401,7 +401,7 @@ export default function Feed() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 px-4 lg:px-8">
+        <div className="flex-1 px-4 lg:px-8 h-full overflow-y-auto">
           {/* Category Navigation */}
           <div className="w-full max-w-[722px] h-[182px] bg-[#CDE5FF] bg-opacity-87 rounded-[63px] mb-8 mx-auto">
             <div className="flex items-center justify-center h-full space-x-8 px-8">
@@ -526,7 +526,7 @@ export default function Feed() {
         </div>
 
         {/* Right Sidebar - Navigation */}
-        <div className="w-[93px] flex-shrink-0">
+        <div className="w-[93px] flex-shrink-0 h-full">
           <div className="w-full h-full bg-[#9AC3C3] rounded-[50px] flex flex-col items-center py-8 space-y-12">
             {/* Menu Icon - Dashboard Link */}
             <Link to="/dashboard" className="cursor-pointer hover:scale-110 transition-all duration-200">
