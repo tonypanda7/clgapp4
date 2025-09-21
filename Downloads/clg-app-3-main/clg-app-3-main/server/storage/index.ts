@@ -33,6 +33,8 @@ interface Post {
   timestamp: string;
   likes: number;
   comments: number;
+  mediaUrl?: string;
+  mediaType?: string; // e.g., 'image/jpeg', 'video/mp4'
   createdAt: Date;
   updatedAt: Date;
 }

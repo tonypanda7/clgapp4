@@ -12,6 +12,7 @@ import {
   handleGetCollegeData
 } from "./routes/auth";
 import { handleStatus } from "./routes/status";
+import { handleUpload } from "./routes/upload";
 import {
   handleVerifyCollegeEmail,
   handleSendVerificationEmail,
@@ -38,6 +39,7 @@ export function createServer() {
 
   // Add error handling for JSON parsing
   app.use(express.json({
+    limit: '10mb',
     verify: (req, res, buf) => {
       console.log("Raw request body:", buf.toString());
     }
@@ -56,6 +58,15 @@ export function createServer() {
     next(error);
   });
 
+  // Runtime env for client
+  app.get('/env.js', (_req, res) => {
+    const env = {
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
+      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
+    };
+    res.type('application/javascript').send(`window.ENV=${JSON.stringify(env)};`);
+  });
+
   // Example API routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
@@ -64,6 +75,7 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
   app.get("/api/status", handleStatus);
+  app.post("/api/upload", handleUpload);
 
   // Authentication routes
   app.post("/api/auth/login", handleLogin);

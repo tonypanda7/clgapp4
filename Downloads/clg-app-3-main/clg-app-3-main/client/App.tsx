@@ -9,7 +9,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
-import Feed from "./pages/Feed";
 import SignUp from "./pages/SignUp";
 import VerifyEmail from "./pages/VerifyEmail";
 import TestEmailVerification from "./pages/TestEmailVerification";
@@ -45,7 +44,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/feed" element={<Feed />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/test-email" element={<TestEmailVerification />} />

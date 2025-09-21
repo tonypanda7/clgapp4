@@ -38,6 +38,8 @@ interface Post {
   timestamp: string;
   likes: number;
   comments: number;
+  mediaUrl?: string;
+  mediaType?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -120,6 +122,8 @@ class Database {
           timestamp TEXT NOT NULL,
           likes INTEGER DEFAULT 0,
           comments INTEGER DEFAULT 0,
+          mediaUrl TEXT,
+          mediaType TEXT,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
@@ -154,6 +158,14 @@ class Database {
       
       try {
         await run(`ALTER TABLE users ADD COLUMN collegeData TEXT`);
+      } catch (e) { /* Column already exists */ }
+
+      // Add media columns to posts table if missing
+      try {
+        await run(`ALTER TABLE posts ADD COLUMN mediaUrl TEXT`);
+      } catch (e) { /* Column already exists */ }
+      try {
+        await run(`ALTER TABLE posts ADD COLUMN mediaType TEXT`);
       } catch (e) { /* Column already exists */ }
 
       this.initialized = true;
@@ -281,11 +293,12 @@ class Database {
 
     await run(`
       INSERT INTO posts (
-        id, userId, userName, userAvatar, content, timestamp, likes, comments, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        id, userId, userName, userAvatar, content, timestamp, likes, comments, mediaUrl, mediaType, createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       postId, postData.userId, postData.userName, postData.userAvatar,
       postData.content, postData.timestamp, postData.likes, postData.comments,
+      postData.mediaUrl || null, postData.mediaType || null,
       now, now
     ]);
 
@@ -401,7 +414,16 @@ class Database {
 
   private rowToPost(row: any): Post {
     return {
-      ...row,
+      id: row.id,
+      userId: row.userId,
+      userName: row.userName,
+      userAvatar: row.userAvatar || undefined,
+      content: row.content,
+      timestamp: row.timestamp,
+      likes: row.likes,
+      comments: row.comments,
+      mediaUrl: row.mediaUrl || undefined,
+      mediaType: row.mediaType || undefined,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
